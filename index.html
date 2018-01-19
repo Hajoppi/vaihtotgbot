@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+    .content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        /* bring your own prefixes */
+        transform: translate(-50%, -50%);
+    }
+    #text {
+        width: 900px;
+        text-align: center;
+        word-wrap: break-word;
+    }
+    body {
+        background-color: black;
+        color: white;
+        font-size: 5em;
+    }
+    </style>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        $(function () {
+            var socket = io();
+            socket.on('event', function(msg) {
+                $('#text').fadeOut(2000,function(){
+                    $('#text').text(msg);
+                    $('#text').fadeIn(2000);
+                });
+            });
+            socket.on('fo', function(msg) {
+                $('#text').fadeOut(2000);
+            });
+            socket.on('sound', function(msg) {
+                $("#sound").attr("src",msg);
+                document.getElementById('sound').play();
+            });
+        });
+    </script>
+  </head>
+  <body>
+      <audio id="sound" src=""></audio>
+      <audio id="music" src=""></audio>
+      <div class="content">
+          <p style="display: none" id="text"></p>
+      </div>
+  </body>
+</html>
