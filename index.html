@@ -10,10 +10,15 @@
         /* bring your own prefixes */
         transform: translate(-50%, -50%);
     }
-    #text {
+    #text{
         width: 900px;
         text-align: center;
         word-wrap: break-word;
+    }
+    #timer {
+        font-size: 2em;
+        margin: auto;
+        text-align: center;
     }
     body {
         background-color: black;
@@ -25,7 +30,35 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         $(function () {
+            var count = 3600;
+            var counter;
             var socket = io();
+            setTime()
+            function setTime(){
+                var seconds = count %60;
+                var minutes = Math.floor(count / 60);
+                var hours = Math.floor(minutes/60);
+                minutes %= 60;
+                hours %= 60;
+                if(minutes.toString().length <2){
+                    minutes = "0"+minutes
+                }
+                if(hours.toString().length <2){
+                    hours = "0"+hours
+                }
+                if(seconds.toString().length <2){
+                    seconds = "0"+seconds
+                }
+                document.getElementById("timer").innerHTML = hours + ":" + minutes + ":" + seconds;
+            }
+            function timer(){
+                count = count -1;
+                if(count == -1){
+                    clearInterval(counter);
+                    return;
+                }
+                setTime();
+            }
             socket.on('event', function(msg) {
                 $('#text').fadeOut(2000,function(){
                     $('#text').text(msg);
@@ -36,8 +69,12 @@
                 $('#text').fadeOut(2000);
             });
             socket.on('sound', function(msg) {
-                $("#sound").attr("src",msg);
-                document.getElementById('sound').play();
+                $("#frame").attr("src",msg);
+                $("#frame")[0].src += "?autoplay=1";
+                //document.getElementById('sound').play();
+            });
+            socket.on('start', function(msg) {
+                counter = setInterval(timer,1000);
             });
         });
     </script>
@@ -45,8 +82,10 @@
   <body>
       <audio id="sound" src=""></audio>
       <audio id="music" src=""></audio>
+        <p id="timer"></p>
       <div class="content">
           <p style="display: none" id="text"></p>
       </div>
+      <iframe id="frame" style="display: none" src=""></iframe>
   </body>
 </html>
